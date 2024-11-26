@@ -26,9 +26,9 @@ Before using this tool, you'll need:
 1. Clone the repository
 2. Install dependencies:
 
-  ```bash
-  pnpm install
-  ```
+```bash
+pnpm install
+```
 
 3. Create a `.env` file in the root directory:
 
@@ -39,4 +39,4 @@ Before using this tool, you'll need:
 
 ## Usage
 
-Run `pnpm run cl` to start the CLI. Now follow the on-terminal instructions. 
+Run `pnpm run cl` to start the CLI. Now follow the on-terminal instructions.
