@@ -1,4 +1,4 @@
-# Changelog Generator CLI
+# Chameleon: Changelog Generator CLI
 
 A command-line tool that generates intelligent changelogs from your GitHub repository using Greptile AI.
 
