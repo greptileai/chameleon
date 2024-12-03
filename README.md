@@ -18,8 +18,8 @@ A command-line tool that generates intelligent changelogs from your GitHub repos
 Before using this tool, you'll need:
 
 - Node.js installed
-- GitHub Personal Access Token
-- Greptile API Key
+- GitHub Personal Access Token (https://github.com/settings/token)
+- Greptile API Key (https://app.greptile.com/settings/api)
 
 ## Installation
 
