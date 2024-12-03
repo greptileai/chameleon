@@ -1,6 +1,6 @@
 # Chameleon: Changelog Generator CLI
 
-A command-line tool that generates intelligent changelogs from your GitHub repository using Greptile AI.
+A command-line tool that generates intelligent changelogs from your GitHub repository using [Greptile AI](https://greptile.com).
 
 ## Features
 
@@ -40,3 +40,6 @@ pnpm install
 ## Usage
 
 Run `pnpm run cl` to start the CLI. Now follow the on-terminal instructions.
+
+*Note: Chameleon uses Greptile to index your repo, please check to ensure your company has approved Greptile before using this tool on private work repos.*
+
