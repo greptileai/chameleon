@@ -18,7 +18,9 @@ class ChangelogGenerator {
     this.greptile = new GreptileAPI(greptileToken, githubToken)
   }
 
-  async generateChangelog({ owner, repo, startDate, endDate, customInstructions }: ChangelogConfig): Promise<string> {
+  async generateChangelog(config: ChangelogConfig): Promise<string> {
+    const { owner, repo, startDate, endDate, customInstructions } = config;
+    
     // Get commits between dates
     const commits = await this.octokit.repos.compareCommits({
       owner,
@@ -33,14 +35,63 @@ class ChangelogGenerator {
       repository: `${owner}/${repo}`,
       branch: 'main', // You might want to make this configurable
     })
-    // Query Greptile with the diff and custom instructions
+
+    // Check if there are any changes before making the API call
+    const noChangesFound = !commits.data.files || commits.data.files.length === 0;
+    
+    // Construct the prompt based on whether changes were found
+    let prompt: string;
+    
+    if (noChangesFound) {
+      prompt = `
+Generate a changelog for the following repository: ${owner}/${repo}
+Time period: From ${startDate.toISOString()} to ${endDate.toISOString()}
+
+${customInstructions || "Generate a user-friendly changelog in markdown format."}
+
+There are NO CHANGES found in this repository during the specified time period.
+Please generate a message indicating that no changes were found.
+
+Your response should follow this format:
+${customInstructions?.includes('mintlify') 
+  ? `<Update label="${new Date().toISOString().split('T')[0]}" description="No Changes">
+  - No code changes were found in the repository during the specified time period.
+  - This could be due to no commits being made or the selected date range not containing any activity.
+</Update>`
+  : `## No Changes Found
+
+- No code changes were found in the repository during the specified time period.
+- This could be due to no commits being made or the selected date range not containing any activity.
+- Try selecting a different date range or repository to view changes.
+
+*Generated on ${new Date().toLocaleString()}*`
+}
+
+Do not include any explanations outside of this format. Only return the formatted message.
+`;
+    } else {
+      // Normal case with changes
+      prompt = `
+Generate a changelog for the following repository: ${owner}/${repo}
+Time period: From ${startDate.toISOString()} to ${endDate.toISOString()}
+
+${customInstructions || "Generate a user-friendly changelog in markdown format."}
+
+The response should contain only the changelog with nothing before or after it.
+There should not be any additional explanations or notes.
+
+Reference the following changes:
+${commits.data.files
+  ?.map((file) => `${file.filename}:\n${file.patch}`)
+  .join('\n\n')}`;
+    }
+
+    // Make API call with the constructed prompt - use the prompt variable we created
     const queryResponse = await this.greptile.queryRepository({
       messages: [
         {
           role: 'user',
-          content: `${customInstructions}\n\n The response should contain only the changelog with nothing before or after it. There should not be a title. Reference the following changes:\n${commits.data.files
-            ?.map((file) => `${file.filename}:\n${file.patch}`)
-            .join('\n\n')}`,
+          content: prompt,
           id: Date.now().toString(),
         },
       ],
@@ -53,8 +104,9 @@ class ChangelogGenerator {
       ],
       sessionId: Date.now().toString(),
     })
-
-    return queryResponse.message
+    
+    // Return the response message
+    return queryResponse.message;
   }
 
   private async getCommitFromDate(owner: string, repo: string, date: Date): Promise<string> {
