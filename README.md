@@ -51,8 +51,6 @@
 
 - 💾 **Save to File** - Save generated changelogs to local files and open them afterward
 
-- 🔧 **Easy Setup** - Interactive setup wizard for environment variables
-
 - 🔄 **Multiple Formats** - Generate internal, external, or Mintlify-compatible changelogs
 
 - 🤖 **AI-powered** - Uses Greptile AI to generate intelligent, context-aware changelogs
